@@ -1,4 +1,3 @@
-import { glob } from "glob";
 import fs from "node:fs";
 import path from "node:path";
 import {
@@ -15,6 +14,8 @@ export default function vitePluginWorkspace(): Plugin {
     name: "vite-plugin-workspace",
     async config(c) {
       const workspaceRoot = searchForWorkspaceRoot(process.cwd());
+      const { glob } = await import("glob");
+
       const configFiles = await glob("**/vite.config.{js,ts}", {
         cwd: workspaceRoot,
         ignore: "**/node_modules/**",
@@ -36,7 +37,7 @@ export default function vitePluginWorkspace(): Plugin {
         }
       }
 
-      console.log(alias);
+      // console.log(alias);
 
       const extra: UserConfig = {
         resolve: { alias },
