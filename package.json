@@ -1,0 +1,22 @@
+{
+  "name": "vite-plugin-workspace",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc --module commonjs && mv dist/index.js dist/index.cjs && tsc",
+    "dev": "tsc --watch",
+    "prepare": "npm run build"
+  },
+  "keywords": [],
+  "author": "Rongjian Zhang",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  },
+  "peerDependencies": {
+    "vite": "^4.0.0"
+  },
+  "packageManager": "pnpm@8.7.5"
+}
