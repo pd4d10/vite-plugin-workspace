@@ -12,7 +12,7 @@ import {
 export default function vitePluginWorkspace(): Plugin {
   return {
     name: "vite-plugin-workspace",
-    async config(c) {
+    async config(c, env) {
       const workspaceRoot = searchForWorkspaceRoot(process.cwd());
       const { glob } = await import("glob");
 
@@ -26,7 +26,7 @@ export default function vitePluginWorkspace(): Plugin {
       for (const configFile of configFiles) {
         const dir = path.dirname(configFile);
 
-        const config = await resolveConfig({ configFile }, "build"); // TODO:
+        const config = await resolveConfig({ configFile }, env.command);
         const pkg = JSON.parse(
           await fs.promises.readFile(path.resolve(dir, "package.json"), "utf-8")
         );
