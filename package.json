@@ -1,6 +1,7 @@
 {
   "name": "vite-plugin-workspace",
   "version": "0.0.1",
+  "type": "module",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -12,11 +13,15 @@
   "author": "Rongjian Zhang",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^20.5.9",
     "typescript": "^5.2.2",
     "vite": "^4.4.9"
   },
   "peerDependencies": {
     "vite": "^4.0.0"
   },
-  "packageManager": "pnpm@8.7.5"
+  "packageManager": "pnpm@8.7.5",
+  "dependencies": {
+    "glob": "^10.3.4"
+  }
 }
