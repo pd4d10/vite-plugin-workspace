@@ -34,12 +34,25 @@ export default function vitePluginWorkspace(): Plugin {
           await fs.promises.readFile(path.resolve(dir, "package.json"), "utf-8")
         );
 
-        if (
-          r.config.build?.lib &&
-          typeof r.config.build.lib.entry === "string"
-        ) {
-          // TODO: multiple entries
-          alias[pkg.name] = path.resolve(dir, r.config.build.lib.entry);
+        if (r.config.build?.lib) {
+          const { entry } = r.config.build.lib;
+
+          if (typeof entry === "string") {
+            alias[pkg.name] = path.resolve(dir, entry);
+          } else if (Array.isArray(entry)) {
+            // TODO:
+          } else {
+            Object.entries(entry)
+              .filter(([key]) => key !== "index")
+              .forEach(([key, fileEntry]) => {
+                alias[path.join(pkg.name, key)] = path.resolve(dir, fileEntry);
+              });
+
+            // place `index` as the last to avoid sub path overrides
+            if (entry.index) {
+              alias[pkg.name] = path.resolve(dir, entry.index);
+            }
+          }
         }
       }
 
