@@ -3,7 +3,7 @@ import path from "node:path";
 import {
   type Plugin,
   mergeConfig,
-  resolveConfig,
+  loadConfigFromFile,
   searchForWorkspaceRoot,
   type UserConfig,
   type AliasOptions,
@@ -20,20 +20,26 @@ export default function vitePluginWorkspace(): Plugin {
         cwd: workspaceRoot,
         ignore: "**/node_modules/**",
         absolute: true,
+        // debug: true,
       });
 
       const alias: AliasOptions = {};
       for (const configFile of configFiles) {
         const dir = path.dirname(configFile);
 
-        const config = await resolveConfig({ configFile }, env.command);
+        const r = await loadConfigFromFile(env, configFile);
+        if (!r) continue;
+
         const pkg = JSON.parse(
           await fs.promises.readFile(path.resolve(dir, "package.json"), "utf-8")
         );
 
-        if (config.build.lib && typeof config.build.lib.entry === "string") {
+        if (
+          r.config.build?.lib &&
+          typeof r.config.build.lib.entry === "string"
+        ) {
           // TODO: multiple entries
-          alias[pkg.name] = path.resolve(dir, config.build.lib.entry);
+          alias[pkg.name] = path.resolve(dir, r.config.build.lib.entry);
         }
       }
 
