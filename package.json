@@ -22,6 +22,7 @@
   },
   "packageManager": "pnpm@8.7.5",
   "dependencies": {
+    "find-up": "^6.3.0",
     "glob": "^10.3.4"
   }
 }

@@ -2,66 +2,109 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   type Plugin,
-  mergeConfig,
   loadConfigFromFile,
   searchForWorkspaceRoot,
-  type UserConfig,
-  type AliasOptions,
+  ConfigEnv,
 } from "vite";
 
-export default function vitePluginWorkspace(): Plugin {
-  return {
-    name: "vite-plugin-workspace",
-    async config(c, env) {
-      const workspaceRoot = searchForWorkspaceRoot(process.cwd());
-      const { glob } = await import("glob");
+async function collectMeta(env: ConfigEnv) {
+  const { glob } = await import("glob");
+  const workspaceRoot = searchForWorkspaceRoot(process.cwd());
 
-      const configFiles = await glob("**/vite.config.{js,ts}", {
-        cwd: workspaceRoot,
-        ignore: "**/node_modules/**",
-        absolute: true,
-        // debug: true,
-      });
+  const configFiles = await glob("**/vite.config.{js,ts}", {
+    cwd: workspaceRoot,
+    ignore: "**/node_modules/**",
+    absolute: true,
+    // debug: true,
+  });
 
-      const alias: AliasOptions = {};
-      for (const configFile of configFiles) {
-        const dir = path.dirname(configFile);
+  const mapper: Record<
+    string,
+    { pkg: { name: string }; entries: Record<string, string> }
+  > = {};
+  const keySet = new Set<string>();
 
-        const r = await loadConfigFromFile(env, configFile);
-        if (!r) continue;
+  for (const configFile of configFiles) {
+    const dir = path.dirname(configFile);
 
-        const pkg = JSON.parse(
-          await fs.promises.readFile(path.resolve(dir, "package.json"), "utf-8")
-        );
+    const r = await loadConfigFromFile(env, configFile);
+    if (!r) continue;
 
-        if (r.config.build?.lib) {
-          const { entry } = r.config.build.lib;
+    const pkg = JSON.parse(
+      await fs.promises.readFile(path.resolve(dir, "package.json"), "utf-8")
+    );
 
-          if (typeof entry === "string") {
-            alias[pkg.name] = path.resolve(dir, entry);
-          } else if (Array.isArray(entry)) {
-            // TODO:
-          } else {
-            Object.entries(entry)
-              .filter(([key]) => key !== "index")
-              .forEach(([key, fileEntry]) => {
-                alias[path.join(pkg.name, key)] = path.resolve(dir, fileEntry);
-              });
+    if (r.config.build?.lib) {
+      keySet.add(pkg.name);
 
-            // place `index` as the last to avoid sub path overrides
-            if (entry.index) {
-              alias[pkg.name] = path.resolve(dir, entry.index);
-            }
-          }
+      const entries: Record<string, string> = {};
+      const { entry } = r.config.build.lib;
+
+      if (typeof entry === "string") {
+        entries[""] = path.resolve(dir, entry);
+      } else if (Array.isArray(entry)) {
+        // TODO:
+      } else {
+        Object.entries(entry)
+          .filter(([key]) => key !== "index")
+          .forEach(([entryKey, file]) => {
+            // keySet.add(path.join(pkg.name, entryKey));
+
+            entries[entryKey] = path.resolve(dir, file);
+          });
+
+        // place `index` as the last to avoid sub path overrides
+        if (entry.index) {
+          entries[""] = path.resolve(dir, entry.index);
         }
       }
 
-      // console.log(alias);
+      mapper[dir] = { pkg, entries };
+    }
+  }
 
-      const extra: UserConfig = {
-        resolve: { alias },
-      };
-      return mergeConfig(c, extra);
+  return { mapper, keys: [...keySet] };
+}
+
+export default function vitePluginWorkspace(): Plugin {
+  let env: ConfigEnv;
+  let meta: Awaited<ReturnType<typeof collectMeta>>;
+
+  return {
+    name: "vite-plugin-workspace",
+    config(c, e) {
+      env = e;
+    },
+    resolveId: {
+      order: "pre",
+      async handler(source, importer) {
+        // collect workspace libraries
+        if (!meta) meta = await collectMeta(env);
+
+        const name = meta.keys.find((k) => source.startsWith(k));
+        if (!name) return;
+
+        // `lodash/get` -> get
+        const subpath = source.slice(name.length + 1);
+
+        const { findUp } = await import("find-up");
+        const dir = await findUp(path.join("node_modules", source), {
+          type: "directory",
+          cwd: importer,
+        });
+        if (!dir) return;
+
+        const realDir = await fs.promises.realpath(dir);
+        const selected = meta.mapper[realDir];
+        if (!selected) return;
+
+        const entry = selected.entries[subpath];
+        if (!entry) return;
+
+        console.log("[resolved]", source, entry);
+
+        return entry;
+      },
     },
   };
 }
