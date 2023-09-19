@@ -9,14 +9,16 @@
     "dev": "tsc --watch",
     "prepare": "npm run build"
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "Rongjian Zhang",
   "license": "MIT",
   "devDependencies": {
     "@types/debug": "^4.1.8",
     "@types/node": "^20.5.9",
-    "typescript": "^5.2.2",
-    "vite": "^4.4.9"
+    "typescript": "^5.2.2"
   },
   "peerDependencies": {
     "vite": "^4.0.0"
