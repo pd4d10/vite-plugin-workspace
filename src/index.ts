@@ -88,7 +88,7 @@ export default function vitePluginWorkspace(): Plugin {
         const subpath = source.slice(name.length + 1);
 
         const { findUp } = await import("find-up");
-        const dir = await findUp(path.join("node_modules", source), {
+        const dir = await findUp(path.join("node_modules", name), {
           type: "directory",
           cwd: importer,
         });
