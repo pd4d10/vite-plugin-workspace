@@ -62,6 +62,11 @@ async function collectMeta(env: ConfigEnv) {
         }
       }
 
+      // default css output, alias to the main path
+      if (entries[""]) {
+        entries["dist/style.css"] = entries[""];
+      }
+
       mapper[dir] = { pkg, entries };
     }
   }
