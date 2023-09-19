@@ -6,6 +6,9 @@ import {
   searchForWorkspaceRoot,
   ConfigEnv,
 } from "vite";
+import _debug from "debug";
+
+const debug = _debug("vite-plugin-workspace");
 
 async function collectMeta(env: ConfigEnv) {
   const { glob } = await import("glob");
@@ -101,8 +104,7 @@ export default function vitePluginWorkspace(): Plugin {
         const entry = selected.entries[subpath];
         if (!entry) return;
 
-        console.log("[resolved]", source, entry);
-
+        debug(`${source} -> ${entry}`);
         return entry;
       },
     },

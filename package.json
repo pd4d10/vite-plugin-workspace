@@ -13,6 +13,7 @@
   "author": "Rongjian Zhang",
   "license": "MIT",
   "devDependencies": {
+    "@types/debug": "^4.1.8",
     "@types/node": "^20.5.9",
     "typescript": "^5.2.2",
     "vite": "^4.4.9"
@@ -22,6 +23,7 @@
   },
   "packageManager": "pnpm@8.7.5",
   "dependencies": {
+    "debug": "^4.3.4",
     "find-up": "^6.3.0",
     "glob": "^10.3.4"
   }
