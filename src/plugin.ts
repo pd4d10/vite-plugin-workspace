@@ -24,7 +24,8 @@ export function plugin(): Plugin {
         const name = meta.keys.find((k) => source.startsWith(k));
         if (!name) return;
 
-        // `lodash/get` -> get
+        // 'lodash' -> ''
+        // 'lodash/get' -> 'get'
         const subpath = source.slice(name.length + 1);
 
         const { findUp } = await import("find-up");

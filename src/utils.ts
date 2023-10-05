@@ -39,18 +39,9 @@ export async function collectMeta(env: ConfigEnv) {
       } else if (Array.isArray(entry)) {
         // TODO:
       } else {
-        Object.entries(entry)
-          .filter(([key]) => key !== "index")
-          .forEach(([entryKey, file]) => {
-            // keySet.add(path.join(pkg.name, entryKey));
-
-            entries[entryKey] = path.resolve(dir, file);
-          });
-
-        // place `index` as the last to avoid sub path overrides
-        if (entry.index) {
-          entries[""] = path.resolve(dir, entry.index);
-        }
+        Object.entries(entry).forEach(([entryKey, file]) => {
+          entries[entryKey] = path.resolve(dir, file);
+        });
       }
 
       // default css output, alias to the main path
