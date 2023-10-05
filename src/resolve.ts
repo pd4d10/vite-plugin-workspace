@@ -4,14 +4,14 @@ import { type Plugin, ConfigEnv } from "vite";
 import _debug from "debug";
 import { collectMeta } from "./utils.js";
 
-const debug = _debug("vite-workspace");
+const debug = _debug("vite-workspace:resolve"); // TODO: tsconfig
 
-export function plugin(): Plugin {
+export function resolve(): Plugin {
   let env: ConfigEnv;
   let meta: Awaited<ReturnType<typeof collectMeta>>;
 
   return {
-    name: "vite-workspace",
+    name: "vite-workspace:resolve",
     config(c, e) {
       env = e;
     },
