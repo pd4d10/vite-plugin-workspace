@@ -8,7 +8,7 @@ import {
 } from "vite";
 import _debug from "debug";
 
-const debug = _debug("vite-plugin-workspace");
+const debug = _debug("vite-workspace");
 
 async function collectMeta(env: ConfigEnv) {
   const { glob } = await import("glob");
@@ -74,12 +74,12 @@ async function collectMeta(env: ConfigEnv) {
   return { mapper, keys: [...keySet] };
 }
 
-export default function vitePluginWorkspace(): Plugin {
+export function plugin(): Plugin {
   let env: ConfigEnv;
   let meta: Awaited<ReturnType<typeof collectMeta>>;
 
   return {
-    name: "vite-plugin-workspace",
+    name: "vite-workspace",
     config(c, e) {
       env = e;
     },
