@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Plugin, UserConfig, mergeConfig } from "vite";
+import _debug from "debug";
+
+const debug = _debug("vite-workspace:lib");
 
 export default function lib(): Plugin {
   return {
@@ -17,6 +20,8 @@ export default function lib(): Plugin {
           ...pkg.dependencies,
           ...pkg.peerDependencies,
         });
+
+        debug(`${pkg.name} deps: ${externalDeps}`);
 
         return mergeConfig<UserConfig, UserConfig>(c, {
           build: {
