@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { type Plugin, ConfigEnv } from "vite";
 import _debug from "debug";
-import { collectMeta } from "./utils";
+import { collectMeta } from "./utils.js";
 
 const debug = _debug("vite-workspace");
 
