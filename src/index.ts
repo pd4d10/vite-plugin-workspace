@@ -11,14 +11,13 @@ import _debug from "debug";
 const debug = _debug("vite-workspace");
 
 async function collectMeta(env: ConfigEnv) {
-  const { glob } = await import("glob");
+  const { glob } = await import("fast-glob");
   const workspaceRoot = searchForWorkspaceRoot(process.cwd());
 
   const configFiles = await glob("**/vite.config.{js,ts}", {
     cwd: workspaceRoot,
-    ignore: "**/node_modules/**",
+    ignore: ["**/node_modules/**"],
     absolute: true,
-    // debug: true,
   });
 
   const mapper: Record<
