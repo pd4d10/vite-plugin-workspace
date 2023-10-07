@@ -3,6 +3,7 @@ import path from "node:path";
 import { type Plugin, ConfigEnv } from "vite";
 import _debug from "debug";
 import { collectMeta } from "./utils.js";
+import { findUp } from "find-up";
 
 const debug = _debug("vite-workspace:resolve"); // TODO: tsconfig
 
@@ -27,7 +28,6 @@ export function resolve(): Plugin {
         // `lodash/get` -> get
         const subpath = source.slice(name.length + 1);
 
-        const { findUp } = await import("find-up");
         const dir = await findUp(path.join("node_modules", name), {
           type: "directory",
           cwd: importer,

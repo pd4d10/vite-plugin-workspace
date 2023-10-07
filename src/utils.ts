@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { ConfigEnv, loadConfigFromFile, searchForWorkspaceRoot } from "vite";
+import fg from "fast-glob";
 
 export async function collectMeta(env: ConfigEnv) {
-  const { default: fg } = await import("fast-glob");
   const workspaceRoot = searchForWorkspaceRoot(process.cwd());
 
   const configFiles = await fg.glob("**/vite.config.{js,ts}", {
