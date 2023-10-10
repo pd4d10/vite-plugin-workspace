@@ -1,12 +1,33 @@
 import fs from "node:fs";
 import path from "node:path";
+import micromatch from "micromatch";
 import { ConfigEnv, loadConfigFromFile, searchForWorkspaceRoot } from "vite";
-import fg from "fast-glob";
+import glob from "fast-glob";
+import { Project } from "./types.js";
+
+export function selectProjects(selectors: string[], projects: Project[]) {
+  selectors = selectors.map((s) =>
+    s.replace(/^('|")/, "").replace(/('|")$/, "")
+  );
+  const pathMatches = micromatch(
+    projects.map((p) => p.root),
+    selectors.filter((s) => s.startsWith("./"))
+  );
+  const nameMatches = micromatch(
+    projects.map((p) => p.packageJson.name),
+    selectors.filter((s) => !s.startsWith("./"))
+  );
+
+  return projects.filter(
+    (p) =>
+      pathMatches.includes(p.root) || nameMatches.includes(p.packageJson.name)
+  );
+}
 
 export async function collectMeta(env: ConfigEnv) {
   const workspaceRoot = searchForWorkspaceRoot(process.cwd());
 
-  const configFiles = await fg.glob("**/vite.config.{js,ts}", {
+  const configFiles = await glob("**/vite.config.{js,ts}", {
     cwd: workspaceRoot,
     ignore: ["**/node_modules/**"],
     absolute: true,

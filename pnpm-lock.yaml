@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  cac:
+    specifier: ^6.7.14
+    version: 6.7.14
   debug:
     specifier: ^4.3.4
     version: 4.3.4
@@ -14,6 +17,9 @@ dependencies:
   find-up:
     specifier: ^6.3.0
     version: 6.3.0
+  micromatch:
+    specifier: ^4.0.5
+    version: 4.0.5
   vite:
     specifier: ^4.0.0
     version: 4.4.9(@types/node@20.5.9)
@@ -25,6 +31,9 @@ devDependencies:
   '@types/debug':
     specifier: ^4.1.8
     version: 4.1.9
+  '@types/micromatch':
+    specifier: ^4.0.3
+    version: 4.0.3
   '@types/node':
     specifier: ^20.5.9
     version: 20.8.2
@@ -253,10 +262,20 @@ packages:
       fastq: 1.15.0
     dev: false
 
+  /@types/braces@3.0.2:
+    resolution: {integrity: sha512-U5tlMYa0U/2eFTmJgKcPWQOEICP173sJDa6OjHbj5Tv+NVaYcrq2xmdWpNXOwWYGwJu+jER/pfTLdoQ31q8PzA==}
+    dev: true
+
   /@types/debug@4.1.9:
     resolution: {integrity: sha512-8Hz50m2eoS56ldRlepxSBa6PWEVCtzUo/92HgLc2qTMnotJNIm7xP+UZhyWoYsyOdd5dxZ+NZLb24rsKyFs2ow==}
     dependencies:
       '@types/ms': 0.7.32
+    dev: true
+
+  /@types/micromatch@4.0.3:
+    resolution: {integrity: sha512-QX1czv7QoLU76Asb1NSVSlu5zTMx/TFNswUDtQSbH9hgvCg+JHvIEoVvVSzBf1WNCT8XsK515W+p3wFOCuvhCg==}
+    dependencies:
+      '@types/braces': 3.0.2
     dev: true
 
   /@types/ms@0.7.32:
@@ -276,6 +295,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       fill-range: 7.0.1
+    dev: false
+
+  /cac@6.7.14:
+    resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}
+    engines: {node: '>=8'}
     dev: false
 
   /debug@4.3.4:

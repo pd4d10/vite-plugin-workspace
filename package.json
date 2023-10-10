@@ -17,6 +17,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/debug": "^4.1.8",
+    "@types/micromatch": "^4.0.3",
     "@types/node": "^20.5.9",
     "typescript": "^5.2.2"
   },
@@ -25,9 +26,11 @@
   },
   "packageManager": "pnpm@8.7.5",
   "dependencies": {
+    "cac": "^6.7.14",
     "debug": "^4.3.4",
     "fast-glob": "^3.3.1",
     "find-up": "^6.3.0",
+    "micromatch": "^4.0.5",
     "vite-tsconfig-paths": "^4.2.1"
   }
 }
