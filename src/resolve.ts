@@ -22,7 +22,9 @@ export function resolve(): Plugin {
         // collect workspace libraries
         if (!meta) meta = await collectMeta(env);
 
-        const name = meta.keys.find((k) => source.startsWith(k));
+        const name = meta.keys.find(
+          (k) => source === k || source.startsWith(k + "/")
+        );
         if (!name) return;
 
         // `lodash/get` -> get
