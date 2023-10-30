@@ -1,9 +1,12 @@
+import { loadConfigFromFile } from "vite";
+
 export interface Project {
   root: string;
   packageJson: {
     name: string;
+    scripts: Record<string, string>;
   };
-  configPath: string;
+  viteConfig: NonNullable<Awaited<ReturnType<typeof loadConfigFromFile>>>;
 }
 
 export interface Meta {

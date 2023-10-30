@@ -1,8 +1,9 @@
-import { PluginOption } from "vite";
-import tsconfig from "vite-tsconfig-paths";
-import { resolve } from "./resolve.js";
-import lib from "./lib.js";
+import { Project } from "./types.js";
 
-export function vitePlugin(): PluginOption {
-  return [resolve(), tsconfig(), lib()];
+export async function dev() {
+  //
+}
+
+export async function build() {
+  // TODO
 }

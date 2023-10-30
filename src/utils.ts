@@ -3,7 +3,16 @@ import path from "node:path";
 import micromatch from "micromatch";
 import { ConfigEnv, loadConfigFromFile, searchForWorkspaceRoot } from "vite";
 import glob from "fast-glob";
-import { Project } from "./types.js";
+import { resolveModule } from "local-pkg";
+import { Meta, Project } from "./types.js";
+
+export async function createInquirer() {
+  const { default: inquirer } = await import("inquirer");
+  // @ts-ignore
+  const { default: searchList } = await import("inquirer-search-list");
+  inquirer.registerPrompt("search-list", searchList);
+  return inquirer;
+}
 
 export function selectProjects(selectors: string[], projects: Project[]) {
   selectors = selectors.map((s) =>
@@ -24,6 +33,46 @@ export function selectProjects(selectors: string[], projects: Project[]) {
   );
 }
 
+export function createSelectorExample(cmd: string, multiple = false) {
+  if (multiple)
+    return `
+  $ vite-workspace ${cmd} @babel/core             # exact package name
+  $ vite-workspace ${cmd} @babel/core @babel/cli  # multiple package names
+  $ vite-workspace ${cmd} "@babel/*"              # package name glob pattern
+  $ vite-workspace ${cmd} "./packages/core"       # path starts with ./
+  $ vite-workspace ${cmd} "./packages/*"          # path glob pattern`.slice(1);
+
+  return `
+  $ vite-workspace ${cmd} @babel/core        # package name
+  $ vite-workspace ${cmd} ./packages/core    # path starts with ./`.slice(1);
+}
+
+export async function createFinalConfig(project: Project) {
+  const wsRoot = searchForWorkspaceRoot(process.cwd());
+  const dir = path.resolve(wsRoot, "node_modules/.vite-workspace");
+  try {
+    await fs.promises.mkdir(dir, { recursive: true });
+  } catch {}
+
+  const p = path.resolve(
+    dir,
+    project.packageJson.name.replaceAll("/", "_") + ".mjs"
+  );
+  await fs.promises.writeFile(
+    p,
+    `
+import config from ${JSON.stringify(project.viteConfig.path)}
+import { mergeConfig } from "vite"
+import { vitePlugin } from "vite-workspace"
+
+export default mergeConfig(config, {
+  root: ${JSON.stringify(project.root)},
+  plugins: [vitePlugin()],
+})
+`
+  );
+}
+
 export async function collectMeta(env: ConfigEnv) {
   const workspaceRoot = searchForWorkspaceRoot(process.cwd());
 
@@ -38,22 +87,29 @@ export async function collectMeta(env: ConfigEnv) {
     { pkg: { name: string }; entries: Record<string, string> }
   > = {};
   const keySet = new Set<string>();
+  const projects: Project[] = [];
 
   for (const configFile of configFiles) {
     const dir = path.dirname(configFile);
 
-    const r = await loadConfigFromFile(env, configFile);
-    if (!r) continue;
+    const conf = await loadConfigFromFile(env, configFile);
+    if (!conf) continue;
 
     const pkg = JSON.parse(
       await fs.promises.readFile(path.resolve(dir, "package.json"), "utf-8")
     );
 
-    if (r.config.build?.lib) {
+    projects.push({
+      root: dir,
+      packageJson: pkg,
+      viteConfig: conf,
+    });
+
+    if (conf.config.build?.lib) {
       keySet.add(pkg.name);
 
       const entries: Record<string, string> = {};
-      const { entry } = r.config.build.lib;
+      const { entry } = conf.config.build.lib;
 
       if (typeof entry === "string") {
         entries[""] = path.resolve(dir, entry);
@@ -83,5 +139,5 @@ export async function collectMeta(env: ConfigEnv) {
     }
   }
 
-  return { mapper, keys: [...keySet] };
+  return { mapper, keys: [...keySet], projects };
 }
