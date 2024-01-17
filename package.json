@@ -24,7 +24,7 @@
   "peerDependencies": {
     "vite": "^4.0.0"
   },
-  "packageManager": "pnpm@8.7.5",
+  "packageManager": "pnpm@8.14.1+sha256.2df78e65d433d7693b9d3fbdaf431b2d96bb4f96a2ffecd51a50efe16e50a6a8",
   "dependencies": {
     "cac": "^6.7.14",
     "debug": "^4.3.4",
