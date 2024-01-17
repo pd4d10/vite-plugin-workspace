@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Plugin, UserConfig, mergeConfig } from "vite";
+import { Plugin } from "vite";
 import _debug from "debug";
 
 const debug = _debug("vite-workspace:lib");
@@ -23,7 +23,7 @@ export default function lib(): Plugin {
 
         debug(`${pkg.name} deps: ${externalDeps}`);
 
-        return mergeConfig<UserConfig, UserConfig>(c, {
+        return {
           build: {
             rollupOptions: {
               external: [
@@ -32,7 +32,7 @@ export default function lib(): Plugin {
               ],
             },
           },
-        });
+        };
       }
     },
   };
